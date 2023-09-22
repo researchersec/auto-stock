@@ -3,8 +3,9 @@ import yfinance as yf
 import json
 from datetime import datetime
 
-# Disable yfinance's internal cache.
-yf.utils._tz_cache = None
+# Specify cache directory
+yf.pdr_override()
+os.environ["TZ_CACHE_DIR"] = './tz_cache_dir'
 
 def fetch_stock_data(symbol):
     stock = yf.Ticker(symbol)
