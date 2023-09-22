@@ -17,15 +17,6 @@ def save_stock_data(data, symbol):
     os.makedirs(folder_path, exist_ok=True)
     data.to_csv(os.path.join(folder_path, "data.csv"))
 
-    # Convert DataFrame to JSON format, ensuring dates are serialized as strings
-    json_data_str = data.reset_index().to_json(date_format='iso', orient='records')
-    json_data = json.loads(json_data_str)
-
-    # Save as JSON
-    json_path = os.path.join("stocks_data", symbol, f"{current_time}.json")
-    with open(json_path, 'w') as json_file:
-        json.dump(json_data, json_file)
-
 if __name__ == "__main__":
     symbols = ["AAPL", "GOOGL", "AMZN"]  # Add more symbols as needed
     for symbol in symbols:
