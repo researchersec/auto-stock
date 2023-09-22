@@ -19,10 +19,10 @@ jobs:
         python-version: '3.x'
 
     - name: Install dependencies
-      run: |
-        pip install yfinance --upgrade
-      env:
-        NO_TZ_CACHE: 1
+      run: pip install yfinance --upgrade
+
+    - name: Create cache directory
+      run: mkdir tz_cache_dir
 
     - name: Run Python script
       run: python fetch_stock_data.py
