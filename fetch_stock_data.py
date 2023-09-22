@@ -17,10 +17,15 @@ def save_stock_data(data, symbol):
     os.makedirs(folder_path, exist_ok=True)
     data.to_csv(os.path.join(folder_path, "data.csv"))
 
+    # Convert Timestamp objects to string for JSON serialization
+    json_data = data.reset_index().to_dict(orient='records')
+    for record in json_data:
+        record['Date'] = str(record['Date'])
+
     # Save as JSON
     json_path = os.path.join("stocks_data", symbol, f"{current_time}.json")
     with open(json_path, 'w') as json_file:
-        json.dump(data.to_dict(), json_file)
+        json.dump(json_data, json_file)
 
 if __name__ == "__main__":
     symbols = ["AAPL", "GOOGL", "AMZN"]  # Add more symbols as needed
