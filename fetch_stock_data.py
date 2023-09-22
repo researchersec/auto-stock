@@ -3,6 +3,9 @@ import yfinance as yf
 import json
 from datetime import datetime
 
+# Disable yfinance's internal cache.
+yf.utils._tz_cache = None
+
 def fetch_stock_data(symbol):
     stock = yf.Ticker(symbol)
     data = stock.history(period="1d")  # Fetch data for the past day
