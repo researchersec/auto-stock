@@ -2,6 +2,8 @@ import os
 import yfinance as yf
 import json
 from datetime import datetime
+import pandas as pd
+import sqlite3
 
 def fetch_stock_data(symbol):
     stock = yf.Ticker(symbol)
