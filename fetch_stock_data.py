@@ -12,7 +12,7 @@ def fetch_stock_data(symbol):
 
 def save_stock_data(data, symbol):
     # Get current date and time
-    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    current_time = datetime.now().strftime("%Y-%m-%d")
 
     # Save as folder
     folder_path = os.path.join(symbol, current_time)
@@ -20,7 +20,7 @@ def save_stock_data(data, symbol):
     data.to_csv(os.path.join(folder_path, "data.csv"))
 
 if __name__ == "__main__":
-    symbols = ["AAPL", "GOOGL", "AMZN", "MSFT"]  # Add more symbols as needed
+    symbols = ["AAPL", "GOOGL", "AMZN", "MSFT", "TSLA"]  # Add more symbols as needed
     for symbol in symbols:
         data = fetch_stock_data(symbol)
         save_stock_data(data, symbol)
