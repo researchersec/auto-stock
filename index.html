@@ -33,7 +33,7 @@
         symbols.forEach(symbol => {
             new TradingView.widget({
                 "container_id": `tradingview_${symbol.toLowerCase()}`,
-                "autosize": true,
+                "autosize": false,
                 "symbol": symbol,
                 "interval": "D",
                 "timezone": "Etc/UTC",
