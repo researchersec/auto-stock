@@ -33,9 +33,17 @@ def preprocess_data(base_path, output_file="stock_data.json"):
             if os.path.exists(file_path):
                 print(f"Processing file: {file_path}")
                 # Read and process the CSV file
-                df = pd.read_csv(file_path, parse_dates=["Date"])
-                df = df[["Date", "Close"]]  # Include other columns if needed
-                combined_data = pd.concat([combined_data, df])
+                df = pd.read_csv(file_path)
+                if "Date" in df.columns:
+                    try:
+                        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")  # Force parse dates, set invalid dates to NaT
+                        df = df.dropna(subset=["Date"])  # Drop rows where date parsing failed
+                        df = df[["Date", "Close"]]  # Include other columns if needed
+                        combined_data = pd.concat([combined_data, df])
+                    except Exception as e:
+                        print(f"Error parsing dates in file {file_path}: {e}")
+                else:
+                    print(f"Missing 'Date' column in file: {file_path}")
 
         # Sort and remove duplicate dates
         if not combined_data.empty:
@@ -52,4 +60,4 @@ def preprocess_data(base_path, output_file="stock_data.json"):
     print(f"Data saved to {output_file}")
 
 # Run preprocessing
-preprocess_data("")
+preprocess_data("./data")
