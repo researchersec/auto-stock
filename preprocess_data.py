@@ -52,4 +52,4 @@ def preprocess_data(base_path, output_file="stock_data.json"):
     print(f"Data saved to {output_file}")
 
 # Run preprocessing
-preprocess_data("./data")
+preprocess_data("")
