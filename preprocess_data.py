@@ -11,12 +11,11 @@ def preprocess_data(base_path, output_file="stock_data.json"):
         symbol_path = os.path.join(base_path, symbol)
         print(f"Checking symbol folder: {symbol_path}")
         
-        # Check if the symbol folder exists
         if not os.path.exists(symbol_path):
             print(f"Symbol folder not found: {symbol_path}")
             continue
 
-        # Find the latest subdirectory (by timestamp in its name)
+        # Gather all subdirectories
         subdirs = [os.path.join(symbol_path, d) for d in os.listdir(symbol_path) if os.path.isdir(os.path.join(symbol_path, d))]
         print(f"Found subdirectories: {subdirs}")
         
@@ -24,24 +23,28 @@ def preprocess_data(base_path, output_file="stock_data.json"):
             print(f"No subdirectories found for symbol: {symbol}")
             continue
 
-        latest_subdir = max(subdirs, key=os.path.getmtime)  # Get the most recently modified folder
-        print(f"Latest subdirectory: {latest_subdir}")
-        
-        file_path = os.path.join(latest_subdir, "data.csv")
-        print(f"Looking for file: {file_path}")
-        
-        # Check if the data.csv file exists
-        if os.path.exists(file_path):
-            print(f"Processing file: {file_path}")
-            # Read and process the CSV file
-            df = pd.read_csv(file_path, parse_dates=["Date"])
-            df = df[["Date", "Close"]]  # Include other columns if needed
+        # Initialize an empty DataFrame to aggregate data
+        combined_data = pd.DataFrame()
+
+        for subdir in subdirs:
+            file_path = os.path.join(subdir, "data.csv")
+            print(f"Looking for file: {file_path}")
+            
+            if os.path.exists(file_path):
+                print(f"Processing file: {file_path}")
+                # Read and process the CSV file
+                df = pd.read_csv(file_path, parse_dates=["Date"])
+                df = df[["Date", "Close"]]  # Include other columns if needed
+                combined_data = pd.concat([combined_data, df])
+
+        # Sort and remove duplicate dates
+        if not combined_data.empty:
+            combined_data = combined_data.sort_values("Date").drop_duplicates(subset="Date")
+
             all_data[symbol] = {
-                "dates": df["Date"].dt.strftime("%Y-%m-%d").tolist(),
-                "close": df["Close"].tolist(),
+                "dates": combined_data["Date"].dt.strftime("%Y-%m-%d").tolist(),
+                "close": combined_data["Close"].tolist(),
             }
-        else:
-            print(f"File not found: {file_path}")
 
     # Save all data to JSON
     with open(output_file, "w") as f:
@@ -49,4 +52,4 @@ def preprocess_data(base_path, output_file="stock_data.json"):
     print(f"Data saved to {output_file}")
 
 # Run preprocessing
-preprocess_data("")
+preprocess_data("./data")
