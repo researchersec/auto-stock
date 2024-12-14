@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Charts</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        canvas {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Stock Charts</h1>
+    <div id="charts"></div>
+    <script>
+        async function loadStockData() {
+            // Load JSON data
+            const response = await fetch("stock_data.json");
+            const stockData = await response.json();
+
+            // Get container
+            const container = document.getElementById("charts");
+
+            // Loop through symbols and create charts
+            Object.entries(stockData).forEach(([symbol, data]) => {
+                // Create canvas element for Chart.js
+                const canvas = document.createElement("canvas");
+                canvas.id = `chart-${symbol}`;
+                canvas.className = "chart-container";
+                container.appendChild(canvas);
+
+                // Create the Chart.js line chart
+                new Chart(canvas, {
+                    type: "line",
+                    data: {
+                        labels: data.dates, // X-axis: Dates
+                        datasets: [{
+                            label: `${symbol} Closing Prices`,
+                            data: data.close, // Y-axis: Closing prices
+                            borderColor: "rgba(75, 192, 192, 1)",
+                            backgroundColor: "rgba(75, 192, 192, 0.2)",
+                            borderWidth: 2,
+                            tension: 0.2, // Smooth lines
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: "top"
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: "Date"
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: "Price (USD)"
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // Load and display charts
+        loadStockData();
+    </script>
+</body>
+</html>
