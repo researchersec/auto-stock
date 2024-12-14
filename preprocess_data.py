@@ -7,9 +7,26 @@ def preprocess_data(base_path, output_file="stock_data.json"):
     all_data = {}
 
     for symbol in symbols:
-        # Adjust file path based on your structure
-        file_path = os.path.join(base_path, f"{symbol}/2023-09-25_01-05-05/data.csv")
+        # Define the symbol's base folder
+        symbol_path = os.path.join(base_path, symbol)
+        
+        # Check if the symbol folder exists
+        if not os.path.exists(symbol_path):
+            print(f"Symbol folder not found: {symbol_path}")
+            continue
+
+        # Find the latest subdirectory (by timestamp in its name)
+        subdirs = [os.path.join(symbol_path, d) for d in os.listdir(symbol_path) if os.path.isdir(os.path.join(symbol_path, d))]
+        if not subdirs:
+            print(f"No subdirectories found for symbol: {symbol}")
+            continue
+
+        latest_subdir = max(subdirs, key=os.path.getmtime)  # Get the most recently modified folder
+        file_path = os.path.join(latest_subdir, "data.csv")
+        
+        # Check if the data.csv file exists
         if os.path.exists(file_path):
+            # Read and process the CSV file
             df = pd.read_csv(file_path, parse_dates=["Date"])
             df = df[["Date", "Close"]]  # Include other columns if needed
             all_data[symbol] = {
