@@ -36,8 +36,11 @@ def preprocess_data(base_path, output_file="stock_data.json"):
                 df = pd.read_csv(file_path)
                 if "Date" in df.columns:
                     try:
-                        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")  # Force parse dates, set invalid dates to NaT
+                        # Parse dates and handle timezones
+                        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")  # Coerce invalid dates to NaT
                         df = df.dropna(subset=["Date"])  # Drop rows where date parsing failed
+                        df["Date"] = df["Date"].dt.tz_localize(None)  # Remove timezone info if unnecessary
+                        
                         df = df[["Date", "Close"]]  # Include other columns if needed
                         combined_data = pd.concat([combined_data, df])
                     except Exception as e:
